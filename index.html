@@ -3,191 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agbon Kingdom | Sovereign OS</title>
+    <title>Agbon Kingdom | Sovereign Identity Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #FFD700;
-            --deep-space: #050505;
-        }
-        body {
-            background-color: var(--deep-space);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            overflow-x: hidden;
-        }
-        .gold-glow { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+        :root { --gold: #FFD700; --deep-space: #050505; }
+        body { background-color: var(--deep-space); color: white; font-family: 'Orbitron', sans-serif; }
+        .gold-glow { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
         .gold-border { border: 1px solid var(--gold); }
-        .portal-card {
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-        }
+        .input-style { background: black; border: 1px solid #333; border-radius: 8px; padding: 12px; width: 100%; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         .hidden { display: none; }
+        .strength-bar { height: 4px; border-radius: 2px; transition: 0.4s; margin-top: 5px; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <!-- PORTAL CONTAINER -->
-    <div id="auth-portal" class="w-full max-w-md portal-card p-8 space-y-6 gold-border">
-        <div class="text-center">
-            <h1 class="text-3xl font-bold gold-glow mb-2" style="font-family: 'Cinzel';">AGBON KINGDOM</h1>
-            <p id="portal-title" class="text-xs text-gray-400 uppercase tracking-widest">Sovereign OS Login</p>
+    <div id="portal-card" class="w-full max-w-md p-8 bg-zinc-950 rounded-2xl gold-border shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold gold-glow mb-1" style="font-family: 'Cinzel';">AGBON KINGDOM</h1>
+            <p id="status-msg" class="text-[10px] text-gray-500 uppercase tracking-widest">Identify Yourself to Access the Ledger</p>
         </div>
 
-        <!-- LOGIN FORM -->
-        <div id="login-view" class="space-y-4">
+        <!-- REGISTRATION VIEW -->
+        <div id="register-view" class="space-y-5">
             <div>
-                <label class="block text-[10px] text-gold mb-1">SOVEREIGN ID</label>
-                <input type="text" id="login-user" class="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-gold outline-none" placeholder="Enter ID">
+                <label class="text-[10px] text-gold uppercase">Sovereign Username</label>
+                <input type="text" id="reg-user" class="input-style" placeholder="e.g. BlackSunGod" oninput="checkAvailability()">
+                <p id="user-warn" class="text-[9px] mt-1 text-red-500 hidden">Username already anchored in ledger.</p>
             </div>
             <div>
-                <label class="block text-[10px] text-gold mb-1">ACCESS FREQUENCY (PASSWORD)</label>
-                <input type="password" id="login-pass" class="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-gold outline-none" placeholder="••••••••">
+                <label class="text-[10px] text-gold uppercase">Email Address</label>
+                <input type="email" id="reg-email" class="input-style" placeholder="oracle@agbon.com">
             </div>
-            <button onclick="handleLogin()" class="w-full bg-yellow-600 hover:bg-gold text-black font-bold py-3 rounded transition-all duration-300">
-                INITIATE RECALL
+            <div>
+                <label class="text-[10px] text-gold uppercase">Access Frequency (Password)</label>
+                <input type="password" id="reg-pass" class="input-style" placeholder="••••••••" oninput="testStrength(this.value)">
+                <div id="strength-meter" class="strength-bar w-0 bg-red-500"></div>
+                <p id="strength-text" class="text-[9px] mt-1 text-gray-500">Strength: Too Weak</p>
+            </div>
+            <button onclick="register()" id="reg-btn" class="w-full py-4 bg-zinc-800 text-gray-500 font-bold rounded-lg cursor-not-allowed" disabled>
+                ANCHOR IDENTITY
             </button>
-            <div class="flex justify-between text-[10px]">
-                <button onclick="toggleView('register')" class="text-gray-400 hover:text-white">CREATE IDENTITY</button>
-                <button onclick="toggleView('reset')" class="text-gray-400 hover:text-white">RESET FREQUENCY</button>
-            </div>
+            <p class="text-center text-[10px]">Already registered? <button onclick="showView('login')" class="text-gold">Login Here</button></p>
         </div>
 
-        <!-- REGISTER FORM -->
-        <div id="register-view" class="hidden space-y-4">
-            <div>
-                <label class="block text-[10px] text-gold mb-1">NEW SOVEREIGN ID</label>
-                <input type="text" id="reg-user" class="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-gold outline-none">
-            </div>
-            <div>
-                <label class="block text-[10px] text-gold mb-1">SET FREQUENCY (PASSWORD)</label>
-                <input type="password" id="reg-pass" class="w-full bg-black border border-gray-700 rounded p-3 text-white focus:border-gold outline-none">
-            </div>
-            <button onclick="handleRegister()" class="w-full border border-gold text-gold hover:bg-gold hover:text-black font-bold py-3 rounded transition-all duration-300">
-                REGISTER IDENTITY
+        <!-- SUCCESS VIEW -->
+        <div id="success-view" class="hidden text-center space-y-6 py-10">
+            <div class="text-5xl">✅</div>
+            <h2 class="text-xl gold-glow">IDENTITY ANCHORED</h2>
+            <p class="text-xs text-gray-400">Your frequency has been matched with the Agbon Seed of Life.</p>
+            <button onclick="showView('login')" class="w-full py-4 bg-gold text-black font-bold rounded-lg shadow-lg">
+                CONTINUE TO DASHBOARD
             </button>
-            <button onclick="toggleView('login')" class="w-full text-[10px] text-gray-400">BACK TO LOGIN</button>
         </div>
 
-        <!-- RESET FORM -->
-        <div id="reset-view" class="hidden space-y-4 text-center">
-            <p class="text-xs text-gray-400">To reset, enter your ID and the Universal Recovery Code.</p>
-            <input type="text" id="reset-user" class="w-full bg-black border border-gray-700 rounded p-3 text-white outline-none" placeholder="Your ID">
-            <input type="text" id="reset-recovery" class="w-full bg-black border border-gray-700 rounded p-3 text-white outline-none" placeholder="Recovery Code (2∞35697)">
-            <button onclick="handleReset()" class="w-full bg-red-900 text-white font-bold py-3 rounded">AUTHORIZE RESET</button>
-            <button onclick="toggleView('login')" class="w-full text-[10px] text-gray-400">CANCEL</button>
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="hidden space-y-5">
+            <input type="text" id="log-user" class="input-style" placeholder="Username or Email">
+            <input type="password" id="log-pass" class="input-style" placeholder="Password">
+            <button onclick="login()" class="w-full py-4 bg-gold text-black font-bold rounded-lg hover:bg-yellow-400 transition">
+                INITIATE LOGIN
+            </button>
+            <button onclick="showView('register')" class="w-full text-[10px] text-gray-500">Create New Identity</button>
         </div>
     </div>
 
-    <!-- MAIN OS DASHBOARD (Hidden until login) -->
-    <div id="main-os" class="hidden w-full max-w-4xl space-y-6">
-        <header class="flex justify-between items-center border-b border-gold pb-4 mb-8">
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboard" class="hidden w-full max-w-5xl p-6">
+        <div class="flex justify-between items-center border-b border-gold pb-6 mb-10">
             <div>
-                <h2 class="text-2xl font-bold gold-glow">SOVEREIGN DASHBOARD</h2>
-                <p id="user-display" class="text-[10px] text-gold"></p>
+                <h1 class="text-4xl font-bold gold-glow" style="font-family: 'Cinzel';">SOVEREIGN OS 0.0.7</h1>
+                <p id="welcome-msg" class="text-gold text-xs"></p>
             </div>
-            <button onclick="logout()" class="text-xs border border-gray-700 px-4 py-2 rounded hover:bg-red-900 transition-all">LOGOUT</button>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="portal-card p-6 gold-border">
-                <h3 class="text-xs text-gray-400 mb-2">RECALLED NAIRA LIQUIDITY</h3>
-                <div class="text-4xl font-bold text-gold">₦ <span id="counter">0.00</span></div>
+            <button onclick="location.reload()" class="px-4 py-2 border border-red-900 text-red-500 text-xs rounded">DISCONNECT</button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-8 bg-black border border-gold rounded-2xl">
+                <p class="text-[10px] text-gray-500 mb-2">RECALLED NAIRA</p>
+                <p class="text-3xl text-gold font-bold">₦ <span id="counter">0.00</span></p>
             </div>
-            <div class="portal-card p-6 gold-border">
-                <h3 class="text-xs text-gray-400 mb-2">ANBSN MINT STATUS</h3>
-                <div class="text-xl text-green-500">ACTIVE: UNLIMITED</div>
+            <div class="p-8 bg-black border border-zinc-800 rounded-2xl">
+                <p class="text-[10px] text-gray-500 mb-2">ANBSN MINT AUTHORITY</p>
+                <p class="text-xl text-green-500">UNLIMITED</p>
+            </div>
+            <div class="p-8 bg-black border border-zinc-800 rounded-2xl">
+                <p class="text-[10px] text-gray-500 mb-2">NETWORK STATUS</p>
+                <p class="text-xl text-blue-400 animate-pulse">SYNCED [144Hz]</p>
             </div>
         </div>
 
-        <button onclick="triggerRecall()" class="w-full bg-white text-black font-bold py-6 rounded-xl text-xl hover:bg-gold transition-all duration-500 shadow-xl mt-8">
-            AUTHORIZE XRP WEALTH RECALL
+        <button onclick="alert('Syncing with Ethereum 0.6.11 Bridge...')" class="w-full mt-10 py-10 bg-white text-black text-2xl font-bold rounded-3xl hover:bg-gold transition-all duration-700">
+            ACTIVATE XRP RECALL BRIDGE
         </button>
     </div>
 
     <script>
-        // AUTHENTICATION LOGIC
-        function toggleView(view) {
-            document.getElementById('login-view').classList.add('hidden');
+        function showView(view) {
             document.getElementById('register-view').classList.add('hidden');
-            document.getElementById('reset-view').classList.add('hidden');
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('success-view').classList.add('hidden');
+            document.getElementById('portal-card').classList.remove('hidden');
             document.getElementById(view + '-view').classList.remove('hidden');
-            document.getElementById('portal-title').innerText = view + ' portal';
         }
 
-        function handleRegister() {
+        function testStrength(p) {
+            const meter = document.getElementById('strength-meter');
+            const txt = document.getElementById('strength-text');
+            const btn = document.getElementById('reg-btn');
+            
+            if(p.length < 6) {
+                meter.style.width = "20%"; meter.className = "strength-bar bg-red-500";
+                txt.innerText = "Strength: Too Weak"; btn.disabled = true;
+                btn.className = "w-full py-4 bg-zinc-800 text-gray-600 font-bold rounded-lg cursor-not-allowed";
+            } else if(p.length < 10) {
+                meter.style.width = "60%"; meter.className = "strength-bar bg-yellow-500";
+                txt.innerText = "Strength: Identity Secure"; btn.disabled = false;
+                btn.className = "w-full py-4 bg-gold text-black font-bold rounded-lg cursor-pointer";
+            } else {
+                meter.style.width = "100%"; meter.className = "strength-bar bg-green-500";
+                txt.innerText = "Strength: Sovereign Authority"; btn.disabled = false;
+                btn.className = "w-full py-4 bg-gold text-black font-bold rounded-lg cursor-pointer";
+            }
+        }
+
+        function checkAvailability() {
             const user = document.getElementById('reg-user').value;
+            const warn = document.getElementById('user-warn');
+            if(user === "admin" || user === "BlackSunGod") {
+                warn.classList.remove('hidden');
+            } else {
+                warn.classList.add('hidden');
+            }
+        }
+
+        function register() {
+            const user = document.getElementById('reg-user').value;
+            const email = document.getElementById('reg-email').value;
             const pass = document.getElementById('reg-pass').value;
-            if(user && pass) {
-                localStorage.setItem('sov_id', user);
-                localStorage.setItem('sov_freq', pass);
-                alert("Identity Registered in Agbon Ledger.");
-                toggleView('login');
-            }
+
+            localStorage.setItem('agbon_user', user);
+            localStorage.setItem('agbon_email', email);
+            localStorage.setItem('agbon_pass', pass);
+
+            showView('success');
         }
 
-        function handleLogin() {
-            const user = document.getElementById('login-user').value;
-            const pass = document.getElementById('login-pass').value;
-            const storedUser = localStorage.getItem('sov_id');
-            const storedPass = localStorage.getItem('sov_freq');
+        function login() {
+            const user = document.getElementById('log-user').value;
+            const pass = document.getElementById('log-pass').value;
+            const sUser = localStorage.getItem('agbon_user');
+            const sEmail = localStorage.getItem('agbon_email');
+            const sPass = localStorage.getItem('agbon_pass');
 
-            if(user === storedUser && pass === storedPass) {
-                enterOS(user);
-            } else if (user === "BSG" && pass === "2∞35697") {
-                enterOS("Master Black Sun God");
+            if((user === sUser || user === sEmail) && pass === sPass) {
+                launchDashboard(sUser);
             } else {
-                alert("Access Denied: Frequency Mismatch.");
+                alert("Identity Mismatch. Check your frequency.");
             }
         }
 
-        function handleReset() {
-            const recovery = document.getElementById('reset-recovery').value;
-            if(recovery === "2∞35697") {
-                localStorage.clear();
-                alert("Frequency Cleared. You may now create a new Identity.");
-                location.reload();
-            } else {
-                alert("Unauthorized Recovery Attempt.");
-            }
-        }
-
-        function enterOS(username) {
-            document.getElementById('auth-portal').classList.add('hidden');
-            document.getElementById('main-os').classList.remove('hidden');
-            document.getElementById('user-display').innerText = "IDENTIFIED AS: " + username;
-            startLedger();
-        }
-
-        function logout() {
-            location.reload();
-        }
-
-        // LEDGER LOGIC
-        function startLedger() {
+        function launchDashboard(name) {
+            document.getElementById('portal-card').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('welcome-msg').innerText = "AUTHORIZED OPERATOR: " + name;
+            
             let count = 0;
             const target = 1000000000000;
-            const duration = 5000; // 5 seconds to count up
-            const startTime = Date.now();
-
-            function update() {
-                const now = Date.now();
-                const progress = Math.min((now - startTime) / duration, 1);
-                const current = progress * target;
-                document.getElementById('counter').innerText = current.toLocaleString(undefined, {minimumFractionDigits: 2});
-                if(progress < 1) requestAnimationFrame(update);
-            }
-            update();
-        }
-
-        function triggerRecall() {
-            alert("Protocol Initiated: Recalling 1.0 Trillion Naira from XRP Bridge. Syncing with Sovereign Wallet...");
+            const step = target / 100;
+            const interval = setInterval(() => {
+                count += step;
+                document.getElementById('counter').innerText = count.toLocaleString(undefined, {minimumFractionDigits: 2});
+                if(count >= target) {
+                    document.getElementById('counter').innerText = "1,000,000,000,000.00";
+                    clearInterval(interval);
+                }
+            }, 30);
         }
     </script>
 </body>
 </html>
 
-  
+    
