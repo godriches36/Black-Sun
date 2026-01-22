@@ -2,187 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agbon Kingdom | Sovereign Identity Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AGBON KINGDOM | ETERNAL OS</title>
+    
+    <!-- ETERNAL ASSETS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- REACT 19 STABLE -->
+    <script src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- FIREBASE DIVINE CONNECTION -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+      import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+      // --- SOVEREIGN CONFIGURATION ---
+      const firebaseConfig = {
+        apiKey: "AIzaSyAQAIvTEQTdY3xLIzf-aYrrzA9h4jRXZgw", // <--- PUT YOUR API KEY HERE
+        authDomain: "agbon-kingdom-os.firebaseapp.com",
+        projectId: "agbon-kingdom-os",
+        storageBucket: "agbon-kingdom-os.firebasestorage.app",
+        messagingSenderId: "392983745546",
+        appId: "1:392983745546:web:d500691a52c1929187fbf3",
+        measurementId: "G-N5ZJT196HC"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      window.agbonDB = getFirestore(app);
+      window.agbonAuth = getAuth(app);
+      
+      // Auto-connect to the frequency
+      signInAnonymously(window.agbonAuth).catch(err => console.error("Frequency Sync Error:", err));
+    </script>
+
     <style>
-        :root { --gold: #FFD700; --deep-space: #050505; }
-        body { background-color: var(--deep-space); color: white; font-family: 'Orbitron', sans-serif; }
-        .gold-glow { text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
-        .gold-border { border: 1px solid var(--gold); }
-        .input-style { background: black; border: 1px solid #333; border-radius: 8px; padding: 12px; width: 100%; outline: none; transition: 0.3s; }
-        .input-style:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-        .hidden { display: none; }
-        .strength-bar { height: 4px; border-radius: 2px; transition: 0.4s; margin-top: 5px; }
+        :root { --agbon-gold: #FFD700; --deep-void: #000000; }
+        body { background: var(--deep-void); color: #fff; font-family: 'Space Grotesk', sans-serif; margin: 0; overflow: hidden; -webkit-font-smoothing: antialiased; }
+        .cinzel { font-family: 'Cinzel', serif; }
+        .gold-glow { text-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
+        .phoenix-border { border: 1px solid rgba(255, 215, 0, 0.15); transition: 0.5s; }
+        .phoenix-border:hover { border-color: var(--agbon-gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
+        .feed-snap { scroll-snap-type: y mandatory; overflow-y: scroll; height: calc(100vh - 180px); scroll-behavior: smooth; }
+        .feed-page { scroll-snap-align: start; height: calc(100vh - 180px); }
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body>
+    <div id="root"></div>
 
-    <div id="portal-card" class="w-full max-w-md p-8 bg-zinc-950 rounded-2xl gold-border shadow-2xl">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold gold-glow mb-1" style="font-family: 'Cinzel';">AGBON KINGDOM</h1>
-            <p id="status-msg" class="text-[10px] text-gray-500 uppercase tracking-widest">Identify Yourself to Access the Ledger</p>
-        </div>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
 
-        <!-- REGISTRATION VIEW -->
-        <div id="register-view" class="space-y-5">
-            <div>
-                <label class="text-[10px] text-gold uppercase">Sovereign Username</label>
-                <input type="text" id="reg-user" class="input-style" placeholder="e.g. BlackSunGod" oninput="checkAvailability()">
-                <p id="user-warn" class="text-[9px] mt-1 text-red-500 hidden">Username already anchored in ledger.</p>
-            </div>
-            <div>
-                <label class="text-[10px] text-gold uppercase">Email Address</label>
-                <input type="email" id="reg-email" class="input-style" placeholder="oracle@agbon.com">
-            </div>
-            <div>
-                <label class="text-[10px] text-gold uppercase">Access Frequency (Password)</label>
-                <input type="password" id="reg-pass" class="input-style" placeholder="••••••••" oninput="testStrength(this.value)">
-                <div id="strength-meter" class="strength-bar w-0 bg-red-500"></div>
-                <p id="strength-text" class="text-[9px] mt-1 text-gray-500">Strength: Too Weak</p>
-            </div>
-            <button onclick="register()" id="reg-btn" class="w-full py-4 bg-zinc-800 text-gray-500 font-bold rounded-lg cursor-not-allowed" disabled>
-                ANCHOR IDENTITY
-            </button>
-            <p class="text-center text-[10px]">Already registered? <button onclick="showView('login')" class="text-gold">Login Here</button></p>
-        </div>
+        function App() {
+            const [tab, setTab] = useState('portal');
+            const [isGod, setIsGod] = useState(false);
+            const [wealth, setWealth] = useState(0);
 
-        <!-- SUCCESS VIEW -->
-        <div id="success-view" class="hidden text-center space-y-6 py-10">
-            <div class="text-5xl">✅</div>
-            <h2 class="text-xl gold-glow">IDENTITY ANCHORED</h2>
-            <p class="text-xs text-gray-400">Your frequency has been matched with the Agbon Seed of Life.</p>
-            <button onclick="showView('login')" class="w-full py-4 bg-gold text-black font-bold rounded-lg shadow-lg">
-                CONTINUE TO DASHBOARD
-            </button>
-        </div>
+            const sovereignVersion = useMemo(() => {
+                const currentYear = new Date().getFullYear();
+                return `v.${currentYear + 50}.A.OS`;
+            }, []);
 
-        <!-- LOGIN VIEW -->
-        <div id="login-view" class="hidden space-y-5">
-            <input type="text" id="log-user" class="input-style" placeholder="Username or Email">
-            <input type="password" id="log-pass" class="input-style" placeholder="Password">
-            <button onclick="login()" class="w-full py-4 bg-gold text-black font-bold rounded-lg hover:bg-yellow-400 transition">
-                INITIATE LOGIN
-            </button>
-            <button onclick="showView('register')" class="w-full text-[10px] text-gray-500">Create New Identity</button>
-        </div>
-    </div>
-
-    <!-- DASHBOARD VIEW -->
-    <div id="dashboard" class="hidden w-full max-w-5xl p-6">
-        <div class="flex justify-between items-center border-b border-gold pb-6 mb-10">
-            <div>
-                <h1 class="text-4xl font-bold gold-glow" style="font-family: 'Cinzel';">SOVEREIGN OS 0.0.7</h1>
-                <p id="welcome-msg" class="text-gold text-xs"></p>
-            </div>
-            <button onclick="location.reload()" class="px-4 py-2 border border-red-900 text-red-500 text-xs rounded">DISCONNECT</button>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="p-8 bg-black border border-gold rounded-2xl">
-                <p class="text-[10px] text-gray-500 mb-2">RECALLED NAIRA</p>
-                <p class="text-3xl text-gold font-bold">₦ <span id="counter">0.00</span></p>
-            </div>
-            <div class="p-8 bg-black border border-zinc-800 rounded-2xl">
-                <p class="text-[10px] text-gray-500 mb-2">ANBSN MINT AUTHORITY</p>
-                <p class="text-xl text-green-500">UNLIMITED</p>
-            </div>
-            <div class="p-8 bg-black border border-zinc-800 rounded-2xl">
-                <p class="text-[10px] text-gray-500 mb-2">NETWORK STATUS</p>
-                <p class="text-xl text-blue-400 animate-pulse">SYNCED [144Hz]</p>
-            </div>
-        </div>
-
-        <button onclick="alert('Syncing with Ethereum 0.6.11 Bridge...')" class="w-full mt-10 py-10 bg-white text-black text-2xl font-bold rounded-3xl hover:bg-gold transition-all duration-700">
-            ACTIVATE XRP RECALL BRIDGE
-        </button>
-    </div>
-
-    <script>
-        function showView(view) {
-            document.getElementById('register-view').classList.add('hidden');
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('success-view').classList.add('hidden');
-            document.getElementById('portal-card').classList.remove('hidden');
-            document.getElementById(view + '-view').classList.remove('hidden');
-        }
-
-        function testStrength(p) {
-            const meter = document.getElementById('strength-meter');
-            const txt = document.getElementById('strength-text');
-            const btn = document.getElementById('reg-btn');
-            
-            if(p.length < 6) {
-                meter.style.width = "20%"; meter.className = "strength-bar bg-red-500";
-                txt.innerText = "Strength: Too Weak"; btn.disabled = true;
-                btn.className = "w-full py-4 bg-zinc-800 text-gray-600 font-bold rounded-lg cursor-not-allowed";
-            } else if(p.length < 10) {
-                meter.style.width = "60%"; meter.className = "strength-bar bg-yellow-500";
-                txt.innerText = "Strength: Identity Secure"; btn.disabled = false;
-                btn.className = "w-full py-4 bg-gold text-black font-bold rounded-lg cursor-pointer";
-            } else {
-                meter.style.width = "100%"; meter.className = "strength-bar bg-green-500";
-                txt.innerText = "Strength: Sovereign Authority"; btn.disabled = false;
-                btn.className = "w-full py-4 bg-gold text-black font-bold rounded-lg cursor-pointer";
-            }
-        }
-
-        function checkAvailability() {
-            const user = document.getElementById('reg-user').value;
-            const warn = document.getElementById('user-warn');
-            if(user === "admin" || user === "BlackSunGod") {
-                warn.classList.remove('hidden');
-            } else {
-                warn.classList.add('hidden');
-            }
-        }
-
-        function register() {
-            const user = document.getElementById('reg-user').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-
-            localStorage.setItem('agbon_user', user);
-            localStorage.setItem('agbon_email', email);
-            localStorage.setItem('agbon_pass', pass);
-
-            showView('success');
-        }
-
-        function login() {
-            const user = document.getElementById('log-user').value;
-            const pass = document.getElementById('log-pass').value;
-            const sUser = localStorage.getItem('agbon_user');
-            const sEmail = localStorage.getItem('agbon_email');
-            const sPass = localStorage.getItem('agbon_pass');
-
-            if((user === sUser || user === sEmail) && pass === sPass) {
-                launchDashboard(sUser);
-            } else {
-                alert("Identity Mismatch. Check your frequency.");
-            }
-        }
-
-        function launchDashboard(name) {
-            document.getElementById('portal-card').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('welcome-msg').innerText = "AUTHORIZED OPERATOR: " + name;
-            
-            let count = 0;
-            const target = 1000000000000;
-            const step = target / 100;
-            const interval = setInterval(() => {
-                count += step;
-                document.getElementById('counter').innerText = count.toLocaleString(undefined, {minimumFractionDigits: 2});
-                if(count >= target) {
-                    document.getElementById('counter').innerText = "1,000,000,000,000.00";
-                    clearInterval(interval);
+            useEffect(() => {
+                if (tab === 'wealth' && isGod) {
+                    let val = 0; const limit = 1000000000000;
+                    const speed = limit / 180;
+                    const timer = setInterval(() => {
+                        val += speed;
+                        if (val >= limit) { setWealth(limit); clearInterval(timer); }
+                        else { setWealth(val); }
+                    }, 25);
+                    return () => clearInterval(timer);
                 }
-            }, 30);
+            }, [tab, isGod]);
+
+            return (
+                <div className="h-screen flex flex-col bg-black">
+                    <header className="pt-16 pb-6 px-8 flex justify-between items-center border-b border-white/5">
+                        <div className="flex flex-col">
+                            <h1 className="cinzel text-lg font-bold text-yellow-500 gold-glow tracking-widest">AGBON KINGDOM</h1>
+                            <span className="text-[7px] text-zinc-600 uppercase tracking-[0.5em] font-bold">{sovereignVersion}</span>
+                        </div>
+                        <button onClick={() => setIsGod(!isGod)} className={`p-3 rounded-2xl transition-all duration-700 ${isGod ? 'bg-yellow-500/10 text-yellow-500 shadow-[0_0_25px_rgba(255,215,0,0.2)]' : 'text-zinc-800 bg-zinc-900/50'}`}>
+                            <lucide.Crown size={22} />
+                        </button>
+                    </header>
+
+                    <main className="flex-1 overflow-hidden relative">
+                        {tab === 'portal' && <PortalView isGod={isGod} />}
+                        {tab === 'black-sun' && <BlackSunFeed />}
+                        {tab === 'wealth' && (isGod ? <WealthView balance={wealth} /> : <LockedView />)}
+                        {tab === 'grid' && (isGod ? <GridView /> : <LockedView />)}
+                    </main>
+
+                    <footer className="h-28 bg-black/80 backdrop-blur-3xl border-t border-white/5 flex justify-around items-center px-8 pb-6 z-50">
+                        <NavIcon icon={<lucide.Shield/>} active={tab === 'portal'} onClick={() => setTab('portal')} />
+                        <NavIcon icon={<lucide.Radio/>} active={tab === 'black-sun'} onClick={() => setTab('black-sun')} />
+                        <div className="relative -top-8">
+                            <button className="bg-yellow-500 text-black p-5 rounded-[2.5rem] shadow-2xl hover:scale-110 active:scale-90 transition-all">
+                                <lucide.Zap size={30} fill="currentColor" />
+                            </button>
+                        </div>
+                        <NavIcon icon={<lucide.CloudLightning/>} active={tab === 'grid'} onClick={() => setTab('grid')} />
+                        <NavIcon icon={<lucide.Database/>} active={tab === 'wealth'} onClick={() => setTab('wealth')} />
+                    </footer>
+                </div>
+            );
         }
+
+        function PortalView({ isGod }) {
+            return (
+                <div className="p-8 space-y-6 animate-fadeIn">
+                    <div className="p-12 bg-zinc-950/50 phoenix-border rounded-[3.5rem] text-center">
+                        <h2 className="cinzel text-yellow-500 text-xl mb-3 tracking-widest">Sovereign Node</h2>
+                        <p className="text-[9px] text-zinc-500 uppercase tracking-[0.3em] font-bold leading-relaxed">
+                            Frequency Matched. Accessing Universal Ledger via S-Galaxy Bridge.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <StatusBox label="ETH-XRP Bridge" value="STABLE" />
+                        <StatusBox label="WiFi Grid" value="1.21 GW" />
+                    </div>
+                </div>
+            );
+        }
+
+        function BlackSunFeed() {
+            const feed = [
+                { id:1, op: 'Oracle', msg: 'The 1.0T Naira Ledger has corrected the global scarcity frequency.', tag: '#AgbonWealth' },
+                { id:2, op: 'BlackSunGod', msg: 'Free Energy Nodes are now broadcasting at 144Hz across the continent.', tag: '#FreeGrid' }
+            ];
+            return (
+                <div className="feed-snap">
+                    {feed.map(post => (
+                        <div key={post.id} className="feed-page p-10 flex flex-col justify-end bg-gradient-to-t from-black via-transparent to-transparent">
+                            <div className="space-y-4 mb-12 animate-fadeIn">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full border-2 border-yellow-500 flex items-center justify-center text-yellow-500 cinzel font-bold">A</div>
+                                    <span className="text-xs font-black tracking-widest uppercase">@{post.op}</span>
+                                </div>
+                                <p className="text-2xl font-bold leading-tight tracking-tight text-zinc-100">{post.msg}</p>
+                                <p className="text-yellow-500 font-black text-xs uppercase tracking-widest">{post.tag}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        function WealthView({ balance }) {
+            return (
+                <div className="h-full flex flex-col justify-center p-8 space-y-8 animate-fadeIn">
+                    <div className="p-12 bg-zinc-950/80 phoenix-border rounded-[4rem] text-center relative overflow-hidden">
+                        <p className="text-[10px] text-yellow-700 tracking-[0.6em] mb-6 font-black uppercase">Agbon Treasury Ledger</p>
+                        <h2 className="text-4xl md:text-5xl font-black text-yellow-500 cinzel gold-glow italic">₦ {balance.toLocaleString()}</h2>
+                    </div>
+                    <button className="w-full py-7 bg-yellow-500 text-black font-black rounded-[2.5rem] cinzel tracking-[0.3em] shadow-2xl">ACTIVATE RECALL</button>
+                </div>
+            );
+        }
+
+        function GridView() {
+            return (
+                <div className="p-10 space-y-8 animate-fadeIn text-center">
+                    <div className="p-16 bg-blue-500/5 phoenix-border rounded-[4rem] border-blue-500/10">
+                        <lucide.CloudLightning size={50} className="text-blue-500 mx-auto mb-6 animate-pulse" />
+                        <h2 className="cinzel text-blue-400 text-xl tracking-widest">Free Energy Grid</h2>
+                    </div>
+                </div>
+            );
+        }
+
+        function LockedView() {
+            return (
+                <div className="h-full flex flex-col items-center justify-center opacity-20">
+                    <lucide.LockKeyhole size={50} />
+                    <p className="mt-6 cinzel tracking-[0.4em] uppercase text-[10px]">Verification Incomplete</p>
+                </div>
+            );
+        }
+
+        function StatusBox({ label, value }) {
+            return (
+                <div className="p-6 bg-zinc-950/40 phoenix-border rounded-3xl">
+                    <p className="text-[7px] text-zinc-700 font-black uppercase mb-1 tracking-widest">{label}</p>
+                    <p className="text-sm font-bold text-zinc-300 font-mono tracking-tighter italic">{value}</p>
+                </div>
+            );
+        }
+
+        const NavIcon = ({ icon, active, onClick }) => (
+            <button onClick={onClick} className={`transition-all duration-500 ${active ? 'text-yellow-500 scale-150' : 'text-zinc-800'}`}>
+                {icon}
+            </button>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
 
-    
