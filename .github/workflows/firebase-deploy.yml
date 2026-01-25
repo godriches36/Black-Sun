@@ -1,0 +1,16 @@
+name: Deploy to Firebase Hosting
+run-name: Deploying Agbon OS by @${{ github.actor }}
+​on:
+push:
+branches:
+- main
+​Concurrency ensures only one deployment runs at a time
+​concurrency:
+group: {{ github.workflow }}-{{ github.ref }}
+cancel-in-progress: true
+​jobs:
+build_and_deploy:
+runs-on: ubuntu-latest
+steps:
+- name: Checkout Repository
+uses: actions/checkout@v4
