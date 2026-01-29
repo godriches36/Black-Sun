@@ -3,279 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AGBON KINGDOM | BLACK SUN GOD OS</title>
+    <title>XER STANDARD | SUPREME MASTER OS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase Legacy Compatibility -->
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-auth-compat.js"></script>
-    
-    <!-- UI Dependencies -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        :root { --agbon-gold: #FFD700; --deep-void: #000000; }
-        body { background: #000; color: #fff; font-family: 'Space Grotesk', sans-serif; margin: 0; overflow: hidden; }
+        :root { --gold: #FFD700; --blue: #00D1FF; --chart: #00FF88; }
+        body, html { 
+            background: #000; 
+            color: #fff; 
+            font-family: 'Space Grotesk', sans-serif; 
+            margin: 0; padding: 0; 
+            overflow: hidden; 
+            height: 100%;
+        }
         .cinzel { font-family: 'Cinzel', serif; }
-        .gold-glow { text-shadow: 0 0 25px rgba(255, 215, 0, 0.7); }
-        .glass { background: rgba(10, 10, 10, 0.9); border: 1px solid rgba(255, 215, 0, 0.15); backdrop-filter: blur(25px); }
-        .btn-divine { background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%); color: #000; font-weight: 900; }
-        .scroll-hide::-webkit-scrollbar { display: none; }
+        .gold-glow { text-shadow: 0 0 30px rgba(255, 215, 0, 0.7); }
+        .blue-glow { text-shadow: 0 0 30px rgba(0, 209, 255, 0.5); }
+        .glass { 
+            background: rgba(5, 5, 5, 0.98); 
+            border: 1px solid rgba(0, 209, 255, 0.2); 
+            backdrop-filter: blur(25px); 
+        }
+        .btn-divine { 
+            background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%); 
+            color: #000; font-weight: 900; 
+        }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .animate-marquee { display: inline-flex; animation: marquee 35s linear infinite; }
-        .scanner-line { height: 2px; background: #FFD700; box-shadow: 0 0 15px #FFD700; animation: scan 3s infinite linear; }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        .animate-marquee { display: inline-flex; animation: marquee 22s linear infinite; }
+        
+        .page { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; }
+        .page.active { display: block; }
+        .tab-btn.active { color: #FFD700; transform: scale(1.1); }
+        
+        .rate-card {
+            background: linear-gradient(to bottom right, rgba(255, 215, 0, 0.1), rgba(0, 209, 255, 0.05));
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        .chart-up { color: var(--chart); font-weight: bold; }
     </style>
 </head>
 <body class="bg-black">
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+    <!-- SUPREME MASTER TICKER -->
+    <div class="fixed top-0 w-full z-[100] bg-black/95 border-b border-yellow-500/30 py-2 backdrop-blur-xl">
+        <div class="animate-marquee flex items-center whitespace-nowrap">
+            <span class="text-[10px] font-black cinzel text-yellow-500 px-10 tracking-[0.4em] uppercase">
+                SUPREME NAIRA VALUATION ACTIVE • 1 ANBSN = $2.00 USD • 200,000 ₦ = $400,000 USD • XER STANDARD: LIQUIDITY BRIDGE FOR CRYPTO & STOCKS • ANBSN GENESIS: ₦1.25T 💹 ALWAYS UP
+            </span>
+        </div>
+    </div>
 
-        // FIREBASE INIT
-        const firebaseConfig = JSON.parse(__firebase_config);
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        function App() {
-            const [user, setUser] = useState(null);
-            const [activeTab, setActiveTab] = useState('auth'); 
-            const [isMenuOpen, setIsMenuOpen] = useState(false);
-            const [oraclePrice, setOraclePrice] = useState(0);
-            const [isL2Active, setIsL2Active] = useState(false);
-
-            // 369 ORACLE CALCULATION
-            useEffect(() => {
-                const fetchPrice = () => {
-                    const mockEthNaira = 4500000; // Live Market Price
-                    const legacyValue = (mockEthNaira * 3.69) + 725;
-                    setOraclePrice(legacyValue);
-                };
-                fetchPrice();
-                const interval = setInterval(fetchPrice, 10000);
-                return () => clearInterval(interval);
-            }, []);
-
-            useEffect(() => {
-                const unsubscribe = auth.onAuthStateChanged((u) => {
-                    if (u) { setUser(u); setActiveTab('social'); }
-                    else { setUser(null); setActiveTab('auth'); }
-                });
-                return () => unsubscribe();
-            }, []);
-
-            const toggleVault = () => {
-                const pass = prompt("CEO TRIPLE-LOCK SIGNATURE (LEVEL 2):");
-                if (pass === "369-BLACK-SUN-GOD") {
-                    setActiveTab('vault');
-                    setIsMenuOpen(false);
-                }
-            };
-
-            const switchNetwork = () => {
-                setIsL2Active(true);
-                alert("OS Frequency Shifted to Agbon L2 (Base/Polygon). Transaction cost: $0.0001.");
-            };
-
-            return (
-                <div className="h-screen w-full flex flex-col relative overflow-hidden bg-black">
-                    
-                    {/* ORACLE TICKER */}
-                    <div className="absolute top-0 w-full z-[100] bg-yellow-500/10 border-b border-yellow-500/20 py-2 backdrop-blur-md">
-                        <div className="animate-marquee flex items-center whitespace-nowrap">
-                            <span className="text-[8px] font-black cinzel text-yellow-500 px-10 tracking-[0.4em] uppercase">
-                                369 ORACLE PRICE: ₦{oraclePrice.toLocaleString()} • AGBON L2 STATUS: {isL2Active ? "ACTIVE" : "PENDING"} • SATELLITE SYNC: 100% • WORLD CUP STADIUMS: ONLINE
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* HEADER */}
-                    {activeTab !== 'auth' && (
-                        <header className="pt-12 px-6 flex justify-between items-center z-50">
-                            <div>
-                                <h1 className="cinzel text-2xl text-yellow-500 gold-glow italic">AGBON</h1>
-                                <p className="text-[7px] text-zinc-500 tracking-[0.4em] font-black uppercase">Infrastructure v5.0</p>
-                            </div>
-                            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-3 glass rounded-full text-yellow-500">
-                                <i data-lucide={isMenuOpen ? "x" : "menu"}></i>
-                            </button>
-                        </header>
-                    )}
-
-                    {/* MAIN CONTENT AREA */}
-                    <main className="flex-1 overflow-y-auto scroll-hide">
-                        {activeTab === 'auth' && <AuthDimension onGoogle={() => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())} />}
-                        {activeTab === 'social' && <SocialFeed />}
-                        {activeTab === 'vault' && <CEOVault oraclePrice={oraclePrice} />}
-                        {activeTab === 'infra' && <InfrastructureBlueprints />}
-                        {activeTab === 'qr' && <QRMerchantGateway />}
-                    </main>
-
-                    {/* SIDE DRAWER */}
-                    <div className={`fixed inset-0 z-[60] glass transition-transform duration-500 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                        <div className="h-full flex flex-col justify-center items-center space-y-6 p-8">
-                            <h2 className="cinzel text-yellow-500 text-xs tracking-[0.5em] mb-4">KINGDOM NAVIGATION</h2>
-                            <MenuBtn icon="shield-check" label="CEO VAULT" onClick={toggleVault} />
-                            <MenuBtn icon="map" label="EMPIRE BLUEPRINTS" onClick={() => { setActiveTab('infra'); setIsMenuOpen(false); }} />
-                            <MenuBtn icon="qr-code" label="ROADSIDE QR" onClick={() => { setActiveTab('qr'); setIsMenuOpen(false); }} />
-                            <MenuBtn icon="zap" label="SWITCH TO L2" onClick={switchNetwork} />
-                            <button onClick={() => auth.signOut()} className="mt-10 text-red-500 text-[10px] font-black uppercase">Logout</button>
-                        </div>
-                    </div>
-
-                    {/* BOTTOM NAV */}
-                    {activeTab !== 'auth' && (
-                        <footer className="h-20 bg-black/90 border-t border-yellow-500/10 flex justify-around items-center px-8 z-40">
-                            <NavIcon icon="play" active={activeTab === 'social'} onClick={() => setActiveTab('social')} />
-                            <NavIcon icon="map" active={activeTab === 'infra'} onClick={() => setActiveTab('infra')} />
-                            <NavIcon icon="qr-code" active={activeTab === 'qr'} onClick={() => setActiveTab('qr')} />
-                            <NavIcon icon="lock" active={activeTab === 'vault'} onClick={toggleVault} />
-                        </footer>
-                    )}
-                </div>
-            );
-        }
-
-        // --- AUTH ---
-        function AuthDimension({ onGoogle }) {
-            return (
-                <div className="h-full flex flex-col items-center justify-center p-8 space-y-8 animate-in fade-in">
-                    <div className="text-center">
-                        <i data-lucide="sun" className="w-16 h-16 text-yellow-500 mx-auto mb-4 gold-glow"></i>
-                        <h2 className="cinzel text-3xl text-yellow-500 tracking-tighter">AGBON OS</h2>
-                        <p className="text-[8px] text-zinc-500 uppercase tracking-[0.5em]">Identity Verification Protocol</p>
-                    </div>
-                    <button onClick={onGoogle} className="w-full max-w-sm p-5 btn-divine rounded-[2.5rem] flex items-center justify-center gap-4">
-                        <i data-lucide="mail"></i>
-                        <span className="text-[10px] font-black uppercase">Continue with Authority</span>
-                    </button>
-                </div>
-            );
-        }
-
-        // --- ROADMAP & PILLARS ---
-        function InfrastructureBlueprints() {
-            const pillars = [
-                { id: "V5.0", title: "COSMIC Reach", items: ["Black Sun Satellites", "Hypersonic Hub Nigeria", "Blue Economy Maritime", "Global Command Center"] },
-                { id: "V4.0", title: "Industrial Age", items: ["Sovereign Steel Plants", "Robotics Workforce", "Pan-African Railway", "World Cup Smart Stadiums"] },
-                { id: "V3.0", title: "Core Utility", items: ["95% Solar Mesh", "Informal Logistics (Keke/Okada)", "Local Packaging/Branding", "MESH WiFi Hubs"] },
-                { id: "V2.0", title: "Matrix Base", items: ["Sovereign Cloud (Data)", "Proof of Origin Labor", "Fractional Real-Estate", "Learn-to-Earn Youth Protocol"] }
-            ];
-            return (
-                <div className="p-8 pt-12 space-y-8 pb-32">
-                    {pillars.map(p => (
-                        <div key={p.id} className="glass p-6 rounded-[2.5rem] border-yellow-500/20">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="cinzel text-yellow-500 text-sm italic">{p.title}</h3>
-                                <span className="text-[10px] font-black text-white/40">{p.id}</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                                {p.items.map(item => (
-                                    <div key={item} className="p-3 bg-zinc-900/50 rounded-2xl border border-zinc-800 text-[9px] font-black text-zinc-400 uppercase tracking-tighter">
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-
-        // --- QR GATEWAY ---
-        function QRMerchantGateway() {
-            return (
-                <div className="p-8 pt-12 space-y-8 pb-32 flex flex-col items-center">
-                    <h2 className="cinzel text-yellow-500 text-center text-sm italic">ROADSIDE QR GATEWAY</h2>
-                    <div className="w-64 h-64 glass rounded-[3rem] p-6 relative overflow-hidden flex items-center justify-center">
-                        <div className="absolute inset-0 scanner-line"></div>
-                        <i data-lucide="qr-code" className="w-40 h-40 text-yellow-500 opacity-50"></i>
-                    </div>
-                    <div className="glass p-6 rounded-[2.5rem] w-full text-center border-yellow-500/30">
-                        <p className="text-[10px] text-zinc-400 uppercase font-black mb-2">Merchant: Roadside Store #369</p>
-                        <p className="text-xl font-bold cinzel text-yellow-500">SETTLEMENT: L2 BRIDGE</p>
-                        <p className="text-[8px] text-green-500 font-bold uppercase mt-2 tracking-widest">Transaction Fee: ₦0.15</p>
-                    </div>
-                </div>
-            );
-        }
-
-        // --- CEO VAULT ---
-        function CEOVault({ oraclePrice }) {
-            return (
-                <div className="p-8 pt-12 space-y-6 pb-32 animate-in zoom-in duration-500">
-                    <div className="text-center"><i data-lucide="crown" className="w-12 h-12 text-yellow-500 mx-auto gold-glow"></i></div>
-                    <div className="p-10 glass rounded-[4rem] text-center border-yellow-500/40 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-yellow-500/5 animate-pulse"></div>
-                        <p className="text-[9px] text-yellow-700 font-black tracking-[0.5em] mb-4 uppercase">Legacy Wealth Dashboard</p>
-                        <h2 className="text-3xl cinzel text-yellow-500 gold-glow">₦ 1,250,000,000,000</h2>
-                        <div className="mt-4 text-[8px] text-zinc-500 uppercase tracking-widest">Calculated via 369 Sovereign Oracle</div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <StatTile icon="globe" label="SATELLITE INTERNET" val="99.9% UPTIME" />
-                        <StatTile icon="train-front" label="PAN-AFRICAN RAIL" val="PAYMENTS ACTIVE" />
-                        <StatTile icon="zap" label="SOLAR GRID" val="95% RELIABILITY" />
-                        <StatTile icon="users" label="YOUTH PROTOCOL" val="4.2M LEARN-TO-EARN" />
-                    </div>
-                </div>
-            );
-        }
-
-        // --- FEED ---
-        function SocialFeed() {
-            return (
-                <div className="h-full snap-y snap-mandatory overflow-y-auto scroll-hide">
-                    {[1, 2].map(i => (
-                        <div key={i} className="h-full snap-start relative flex flex-col justify-end p-8 pb-32">
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30"></div>
-                            <div className="relative z-10 space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full border-2 border-yellow-500 bg-zinc-900"></div>
-                                    <h4 className="font-black text-sm cinzel italic">Black Sun God</h4>
-                                </div>
-                                <p className="text-xs text-zinc-300 leading-relaxed font-medium">
-                                    {i === 1 ? "The Pan-African Railway is now live. All tickets are settled via the Agbon L2 Bridge." : "Our Hypersonic Hub is officially the largest airport on Earth. Nigeria is the gateway."}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-
-        // UTILS
-        const NavIcon = ({ icon, active, onClick }) => (
-            <button onClick={onClick} className={`p-4 transition-all ${active ? 'text-yellow-500 scale-125' : 'text-zinc-800'}`}>
-                <i data-lucide={icon}></i>
-            </button>
-        );
-
-        const MenuBtn = ({ icon, label, onClick }) => (
-            <button onClick={onClick} className="w-full max-w-xs p-5 glass rounded-[2.5rem] flex items-center gap-5 active:scale-95 group">
-                <i data-lucide={icon} className="text-yellow-500 group-hover:scale-110 transition-transform"></i>
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-300">{label}</span>
-            </button>
-        );
-
-        const StatTile = ({ icon, label, val }) => (
-            <div className="p-5 glass rounded-[2.5rem] border-zinc-900">
-                <i data-lucide={icon} className="text-yellow-500 mb-2 w-4 h-4"></i>
-                <p className="text-[7px] font-black text-zinc-600 uppercase tracking-widest">{label}</p>
-                <p className="text-[9px] font-black text-white italic mt-1">{val}</p>
+    <div class="h-full w-full flex flex-col pt-12">
+        
+        <!-- HEADER -->
+        <header class="px-8 py-6 flex justify-between items-center">
+            <div>
+                <h1 class="cinzel text-lg text-yellow-500 gold-glow tracking-widest uppercase">XER MASTER</h1>
+                <p class="text-[7px] text-zinc-500 tracking-[0.6em] font-black uppercase mt-1">Sovereign Financial OS</p>
             </div>
-        );
+            <div class="flex flex-col items-end">
+                <span class="text-[8px] font-bold text-blue-400 cinzel tracking-tighter">SUPREME WORLD LEADER</span>
+                <span class="text-[6px] text-zinc-600 font-black tracking-widest uppercase">Ratio 1:2 Secured</span>
+            </div>
+        </header>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-        setInterval(() => { if(window.lucide) window.lucide.createIcons(); }, 1500);
+        <!-- PAGE: VALUATION ORACLE -->
+        <div id="oracle" class="page active px-8 space-y-6">
+            <div class="p-8 glass rounded-[3rem] border-yellow-500/40 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-yellow-500/5 animate-pulse"></div>
+                <p class="text-[9px] text-zinc-500 font-black tracking-[0.4em] mb-4 uppercase italic">ANBSN Live Valuation (💹)</p>
+                <h2 id="live-naira" class="text-3xl cinzel text-yellow-500 gold-glow tracking-tighter italic">₦ 1,250,000,000,000</h2>
+                <div class="mt-4 p-3 bg-white/5 rounded-2xl">
+                    <p class="text-[8px] text-blue-400 font-black uppercase tracking-widest">Global Dollar Power</p>
+                    <p id="live-dollar" class="text-[14px] font-bold text-white tracking-widest">$ 2,500,000,000,000 USD</p>
+                </div>
+            </div>
+
+            <!-- THE 200K EXAMPLE -->
+            <div class="p-6 glass rounded-[2.5rem] rate-card">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-[10px] font-black text-white uppercase tracking-widest">Sovereign Exchange Ratio</p>
+                    <span class="text-[8px] bg-green-500/20 text-green-400 px-2 py-1 rounded">FIXED 1:2</span>
+                </div>
+                <div class="flex items-end justify-between border-b border-white/10 pb-4">
+                    <div>
+                        <p class="text-[18px] font-black text-yellow-500">₦ 200,000</p>
+                        <p class="text-[8px] text-zinc-500 uppercase font-black">Digital Naira</p>
+                    </div>
+                    <i data-lucide="move-right" class="text-zinc-700 mb-2"></i>
+                    <div class="text-right">
+                        <p class="text-[18px] font-black text-blue-400">$ 400,000</p>
+                        <p class="text-[8px] text-zinc-500 uppercase font-black">US Dollars</p>
+                    </div>
+                </div>
+                <p class="text-[7px] text-zinc-500 mt-4 uppercase font-black tracking-widest">Calculated via XER Standard Liquidity Bridge</p>
+            </div>
+
+            <div class="p-6 glass rounded-[2.5rem] border-l-4 border-l-yellow-500">
+                <h3 class="text-[10px] font-black text-white uppercase mb-2">The Sovereign Mandate</h3>
+                <p class="text-[10px] text-zinc-400 leading-relaxed italic">
+                    ANBSN transforms the Naira into the world's highest value currency. The ₦1.25T Genesis floor out-values the entire Dollar Tree, establishing a permanent 1:2 dominance for the Black Sun God Riches.
+                </p>
+            </div>
+        </div>
+
+        <!-- PAGE: XER ECOSYSTEM -->
+        <div id="bridge" class="page px-8 space-y-6">
+            <div class="text-center py-6">
+                <i data-lucide="blocks" class="w-16 h-16 text-blue-500 mx-auto mb-4"></i>
+                <h2 class="cinzel text-xl text-white">XER STANDARD</h2>
+                <p class="text-[8px] text-zinc-500 uppercase tracking-widest mt-2">Blockchain • Crypto • Stocks</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-5 rounded-3xl text-center">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-green-400 mx-auto mb-2"></i>
+                    <p class="text-[8px] font-black text-zinc-500 uppercase">Stock Markets</p>
+                    <p class="text-[10px] font-bold text-white uppercase">SYNCHRONIZED</p>
+                </div>
+                <div class="glass p-5 rounded-3xl text-center">
+                    <i data-lucide="cpu" class="w-5 h-5 text-blue-400 mx-auto mb-2"></i>
+                    <p class="text-[8px] font-black text-zinc-500 uppercase">Crypto Core</p>
+                    <p class="text-[10px] font-bold text-white uppercase">BRIDGED</p>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-[3rem] space-y-6">
+                <button class="w-full p-6 btn-divine rounded-[2.5rem] uppercase text-[11px] tracking-widest active:scale-95 transition-all">
+                    Initiate Global Cross-Border Swap
+                </button>
+                <p class="text-[8px] text-center text-zinc-500 uppercase tracking-widest">Processing through Ethereum Riches Network</p>
+            </div>
+        </div>
+
+        <!-- PAGE: RESERVE VAULT -->
+        <div id="vault" class="page px-8 space-y-6">
+            <div class="text-center pt-10">
+                <i data-lucide="shield-check" class="w-16 h-16 text-yellow-500 mx-auto mb-4 gold-glow"></i>
+                <h2 class="cinzel text-xl text-white uppercase">RESERVE STATUS</h2>
+            </div>
+            <div class="p-10 glass rounded-[4rem] text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-yellow-500/5"></div>
+                <p class="text-[9px] text-zinc-500 font-black uppercase mb-4 tracking-widest">Global Financial Reserve</p>
+                <h2 class="text-4xl cinzel text-white blue-glow">UNLIMITED</h2>
+                <p class="text-[8px] text-green-400 font-black mt-4 uppercase tracking-[0.3em]">ALL GLOBAL DEBT REDEEMED</p>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <footer class="fixed bottom-0 w-full h-24 bg-black/95 border-t border-yellow-500/10 flex justify-around items-center px-4 z-[200]">
+            <button onclick="showPage('oracle')" class="tab-btn active p-4 text-zinc-700 transition-all" id="btn-oracle">
+                <i data-lucide="layout-dashboard"></i>
+            </button>
+            <button onclick="showPage('bridge')" class="tab-btn p-4 text-zinc-700 transition-all" id="btn-bridge">
+                <i data-lucide="shuffle"></i>
+            </button>
+            <button onclick="showPage('vault')" class="tab-btn p-4 text-zinc-700 transition-all" id="btn-vault">
+                <i data-lucide="crown"></i>
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        // Automatic High-Value Logic (💹 Always Up)
+        let nairaValue = 1250000000000;
+        const nairaEl = document.getElementById('live-naira');
+        const dollarEl = document.getElementById('live-dollar');
+
+        function updateValue() {
+            // High-value appreciation
+            nairaValue += Math.floor(Math.random() * 2000000) + 1000000;
+            const dollarValue = nairaValue * 2; // Fixed 1:2 Ratio
+            
+            nairaEl.innerText = "₦ " + nairaValue.toLocaleString();
+            dollarEl.innerText = "$ " + dollarValue.toLocaleString() + " USD";
+        }
+
+        setInterval(updateValue, 3000);
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active', 'text-yellow-500');
+                b.classList.add('text-zinc-700');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + pageId);
+            activeBtn.classList.add('active', 'text-yellow-500');
+            activeBtn.classList.remove('text-zinc-700');
+            
+            window.scrollTo(0,0);
+        }
+
+        window.onload = () => {
+            lucide.createIcons();
+            console.log("XER Master OS Online. Sovereign 1:2 Valuation Locked.");
+        };
     </script>
 </body>
 </html>
 
-  
