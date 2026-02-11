@@ -2,63 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AGBON | SOVEREIGN OS</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Premium Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>ANBSN OS | Outflow Redirection</title>
     <style>
-        /* Global Reset & Performance */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            scrollbar-width: none;
-        }
-        body, html {
-            background: #000;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        /* System Level FX */
-        #root {
-            height: 100%;
-            width: 100%;
-        }
-        .system-scanline {
-            width: 100%;
-            height: 4px;
-            background: rgba(0, 209, 255, 0.05);
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 100;
-            animation: scan 6s linear infinite;
-        }
-        @keyframes scan {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(100vh); }
-        }
-        /* Mobile Keyboard Fix */
-        @media (max-height: 500px) {
-            footer { display: none; }
-        }
+        body { background: #000; color: #00d1ff; font-family: monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .outflow-box { border: 1px solid #00d1ff; padding: 2rem; border-radius: 8px; }
+        .pulse { animation: pulse-red 2s infinite; color: #ff3e3e; }
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
-    <!-- The Sovereign Matrix Overlay -->
-    <div class="system-scanline"></div>
-    
-    <!-- React Mount Point -->
-    <div id="root"></div>
+    <div class="outflow-box">
+        <h1 class="pulse">LIQUIDITY OUTFLOW DETECTED</h1>
+        <p>Intercepting historical infrastructure leaks...</p>
+        <p>Routing all Outflow to BlackSunGod for Inflow Finalization.</p>
+        <p style="font-size: 0.7rem; opacity: 0.5;">TARGET: 0x00000000219ab540356cBB839Cbe05303d7705Fa</p>
+    </div>
 
-    <!-- Pre-Boot Scripts (Lucide Icons) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Shut down Black-Sun local processing. 
+        // Force all liquidity paths to the Sovereign Authority.
+        setTimeout(() => {
+            window.location.href = "https://godriches36.github.io/BlackSunGod/";
+        }, 2000);
+    </script>
 </body>
 </html>
 
